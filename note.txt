@@ -1,0 +1,118 @@
+192.168.0.1 --> gateway mikrotik
+
+192.168.0.99 --> Proxy Server
+
+
+
+# apt-get install apache2 php5.6 squid squidclient squid-cgi gcc build-essential sharutils ccze libzip-dev automake libfile-readbackwards-perl -y
+
+http://askubuntu.com/questions/756879/cant-install-php5-on-ubuntu-16-04
+
+# wget https://github.com/idbmb/squid-lusca/raw/master/LUSCA_HEAD-r14809-patch.tar.bz2
+
+LUSCA_HEAD-r14809-patch.tar.bz2
+
+# tar -xvjf LUSCA_HEAD-r14809-patch.tar.bz2 
+
+
+cat /proc/cpuinfo
+
+grep -m1 -A3 "vendor_id" /proc/cpuinfo
+
+CHOST="x86_64-pc-linux-gnu"
+CFLAGS="-march=broadwell -O2 -pipe"
+CXXFLAGS="${CFLAGS}"
+
+tambahkan (jadinya ini)
+
+CHOST="x86_64-pc-linux-gnu" CFLAGS="-march=broadwell -O2 -pipe" CXXFLAGS="${CFLAGS}" ./configure -prefix=/usr -exec-prefix=/usr -bindir=/usr/sbin -sbindir=/usr/sbin -libexecdir=/usr/lib/squid -sysconfdir=/etc/squid -localstatedir=/var/spool/squid -datadir=/usr/share/squid --enable-gnuregex --enable-async-io=24 --with-aufs-threads=24 --with-pthreads --with-aio --with-dl --enable-storeio=aufs,null --enable-removal-policies=heap --enable-icmp --enable-delay-pools --disable-wccp --enable-snmp --enable-cache-digests --enable-default-err-language=English --enable-err-languages=English --enable-linux-netfilter --disable-ident-lookups --with-maxfd=65535 --enable-follow-x-forwarded-for --enable-large-cache-files --with-large-files --enable-referer-log
+
+
+# cd LUSCA_HEAD-r14809/
+# make clean
+
+masukin chost yg tdi
+
+# make
+# make install
+
+buat directory proxy untuk cachenya
+
+# mkdir /proxy 
+# chown -R proxy:proxy /proxy 
+# chmod -R 777 /proxy 
+
+buat directory log cache
+
+# mkdir /var/log/squid 
+# chown -R proxy:proxy /var/log/squid
+
+konfigurasi squid cache http
+
+wget https://dl.dropboxusercontent.com/s/wp4qv6yh80z0b62/fileconfig.tar.gz --> not found
+
+===============
+squid lusca fix
+===============
+
+references:
+
+https://aacable.wordpress.com/?s=lusca
+https://opinikoe.com/squid-lusca-on-ubuntu/ 
+
+
+192.168.1.1       192.168.1.11 inet
+inet              192.168.0.1 local
+                  192.168.2.1          192.168.0.99 local
+modem ----------- mikrotik ----------- proxy server
+                     |
+                     |
+                  192.168.2.2
+                  client 
+
+192.168.1.6 public : inet
+192.168.0.1 local  : proxy
+192.168.2.1 ether3 : client
+
+
+redirect proxy (konfig mikrotik)
+
+/ip firewall address-list add address=192.168.0.0/24 comment="SQUID PROXY EXTERNAL" disabled=no list="ProxyNet"
+
+/ip firewall nat add action=dst-nat \
+chain=dstnat comment="TRANSPARENT DNS UDP LOCAL" \
+disabled=no dst-port=53 in-interface=local \
+protocol=udp to-ports=53
+
+/ip firewall nat add action=dst-nat \
+chain=dstnat disabled=no dst-port=53 in-interface=ether3 \
+protocol=udp to-ports=53 comment="TRANSPARENT DNS UDP PROXY"
+
+
+/ip firewall nat
+add chain=dstnat action=dst-nat to-addresses=192.168.0.99 to-ports=8080 \
+protocol=tcp src-address=192.168.2.0/24 src-address-list=!ProxyNet \
+comment="REDIRECT KE PROXY" in-interface=ether3 dst-port=80
+
+-----------------------------------------------
+
+
+192.168.1.1                192.168.2.1
+modem --- mikrotik --- proxy server
+               192.168.1.2
+             | 192.168.2.2 ---> prerouting
+             | 192.168.3.1
+
+client     client     client
+192.168.3.2    3.3        3.4
+
+------------------------------------------------
+
+
+#squid -d1n
+#ps aux |grep squid
+
+To view squid web access activity log, use command
+ tail -f /var/log/squid/access.log 
+OR
+ tail -f /var/log/squid/access.log |ccze 
