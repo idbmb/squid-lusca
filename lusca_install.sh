@@ -2,9 +2,9 @@
 # Version 1.0 / 2nd July, 2014
 # LUSCA r14942 Automated Installation Script for Ubuntu flavor / jz
 # Syed Jahanzaib / aacable @ hotmail.com  / https://aacable.wordpress.com
- 
+
 # Setting Variables . . . [JZ]
-# You can change the URL if default url is not accessible in some cases. 
+# You can change the URL if default url is not accessible in some cases.
 #URL=http://aacable.rdo.pt/files/linux_related/lusca
 URL=http://wifismartzone.com/files/linux_related/lusca
 SQUID_DIR="/etc/squid"
@@ -12,13 +12,13 @@ CACHE_DIR="/cache-1"
 pid=`pidof squid`
 osver=`cat /etc/issue |awk '{print $1}'`
 squidlabel="LUSCA_HEAD-r14942"
- 
+
 # Colors Config  . . . [[ JZ . . . ]]
 ESC_SEQ="\x1b["
 COL_RESET=$ESC_SEQ"39;49;00m"
 COL_RED=$ESC_SEQ"31;01m"
 COL_GREEN=$ESC_SEQ"32;01m"
- 
+
 # OS checkup for UBUNTU
 echo -e "$COL_GREEN Lusca r14942 Automated Installation Script ver 1.0 for Ubuntu . . .$COL_RESET"
 echo -e "$COL_GREEN Checking OS version, as it must be Ubuntu in order to Continue . . .$COL_RESET"
@@ -31,7 +31,7 @@ else
 echo -e "$COL_RED Sorry, it seems your Linux Distribution is not UBUNTU . Exiting ...$COL_RESET"
 exit 1
 fi
- 
+
 # Make sure only root can run our script / Checking if user is root, otherwise exit with error [[Jz]]
 echo
 echo -e "$COL_GREEN Verifying if you are logged in with root privileges  . . .$COL_RESET" 1>&2
@@ -42,17 +42,17 @@ echo
 echo -e "$COL_RED This script must be run as root, switch to root now . . .$COL_RESET" 1>&2
 exit 1
 fi
- 
+
 # Clearing previous download if any in /tmp folder
 echo
 echo -e "$COL_GREEN Clearing previous downloads if any in /tmp folder to avoid duplication$COL_RESET"
 sleep 3
- 
+
 rm -fr /tmp/squid.conf
 rm -fr /tmp/storeurl.txt
 rm -fr /tmp/storeurl.pl
 rm -fr /tmp/LUSCA_HEAD-r14942*
- 
+
 # Checking IF $URL is accessible m if YES then continue further , otherwise EXIT the script with ERROR ! [[ JZ .. . .]]
 echo
 echo -e "$COL_GREEN Checking if $URL is accessible in order to proceed further. . .!! $COL_RESET"
@@ -69,11 +69,11 @@ fi
 rm -fr /tmp/squid.conf
 sleep 6
 # Moving further . . .
- 
+
 clear
 echo -e "$COL_GREEN You are logged in with root ID, Ok to proceed further . . .!! $COL_RESET"
 echo
- 
+
 ################################################################## [zaib]
 echo
 echo -e "$COL_GREEN Updating Ubuntu first . . . !! $COL_RESET"
@@ -83,7 +83,7 @@ echo
 echo -e "$COL_GREEN Installing required components . . . !! $COL_RESET"
 sleep 3
 apt-get install  -y gcc  build-essential   libstdc++6   unzip    bzip2   sharutils  ccze  libzip-dev  automake1.9  libfile-readbackwards-perl  dnsmasq
- 
+
 # Clearing OLD data files . . .
 {
 if [ -f $SQUID_DIR/squid.conf ]; then
@@ -97,7 +97,7 @@ echo
 echo -e "$COL_GREEN No Previous Squid configuration have been found in $SQUID_DIR. Proceeding further $COL_RESET"
 fi
 }
- 
+
 # Checking SQUID status if its already running - check by PID
 if [ "$pid" == "" ]; then
 echo
@@ -111,13 +111,13 @@ echo -e "$COL_RED KILLING PREVIOUS SQUID INSTANCE by killall -9 squid command  !
 killall -9 squid
 sleep 3
 fi
- 
+
 # Downloading Squid source package [zaib]
 echo
 echo
 echo -e "$COL_GREEN Downloading SQUID source package in /tmp folder. . . !! $COL_RESET"
 sleep 3
- 
+
 # Checking if /tmp folder is previously present or not . . .
 {
 if [ ! -d "/tmp" ]; then
@@ -130,37 +130,37 @@ echo
 echo -e "$COL_GREEN /tmp folder is already present , so no need to create it, Proceeding further . . . $COL_RESET"
 fi
 }
- 
+
 cd /tmp
- 
+
 # Checking IF LUSCA_HEAD-r14942.tar.gz  installation file have been ALREADY downloaded in /tmp to avoid duplication! [[ JZ .. . .]]
 {
 if [ -f /tmp/LUSCA_HEAD-r14942.tar.gz ]; then
 rm -fr /tmp/LUSCA_HEAD-r14942.tar.gz
 fi
 }
- 
+
 wget -c http://wifismartzone.com/files/linux_related/lusca/LUSCA_HEAD-r14942.tar.gz
- 
+
 # Checking IF LUSCA_HEAD-r14942 installation file have been downloaded properly. if YEs continue further , otherwise EXIT the script with ERROR ! [[ JZ .. . .]]
 {
 if [ ! -f /tmp/LUSCA_HEAD-r14942.tar.gz ]; then
 echo
 echo
- 
+
 echo -e "$COL_RED ERROR: SQUID source code package File could not be download or not found in /tmp/ !! $COL_RESET"
 exit 0
 fi
 }
 echo
 echo
- 
+
 echo -e "$COL_GREEN Extracting Squid from tar archive. . . !! $COL_RESET"
 sleep 3
 tar zxvf LUSCA_HEAD-r14942.tar.gz
 cd LUSCA_HEAD-r14942/
 mkdir /etc/squid
- 
+
 echo -e "$COL_GREEN Executing $squidlabel Compiler [jz] . . . !! $COL_RESET"
 echo
 cd /tmp/LUSCA_HEAD-r14942
@@ -174,7 +174,7 @@ echo
 echo
 echo -e "$COL_GREEN Creating SQUID LOGS folder and assiging permissions . . . !! $COL_RESET"
 sleep 3
- 
+
 # Checking if log folder is previously present or not . . .
 {
 if [ -d "/var/log/squid" ]; then
@@ -194,17 +194,17 @@ echo
 echo
 echo -e "$COL_GREEN Downloading SQUID.CONF file from $URL and copy it to $SQUID_DIR. . . !! $COL_RESET"
 sleep 3
- 
+
 # Checking IF SQUID.CONF File have been ALREADY downloaded in /tmp to avoid duplication! [[ JZ .. . .]]
 {
 if [ -f /tmp/squid.conf ]; then
 rm -fr /tmp/squid.conf
 fi
 }
- 
+
 cd /tmp
 wget $URL/squid.conf
- 
+
 # Checking IF SQUID.CONF file have been downloaded. if YEs continue further , otherwise EXIT the script with ERROR ! [[ JZ .. . .]]
 {
 if [ ! -f /tmp/squid.conf ]; then
@@ -215,30 +215,30 @@ exit 0
 fi
 }
 cp -fr squid.conf $SQUID_DIR
- 
+
 ## ** DOWNLOAD SQUID.CONF
 echo
 echo
 echo -e "$COL_GREEN Downloading STOREURL.PL file from $URL and copy it to $SQUID_DIR. . . !! $COL_RESET"
 sleep 3
 cd /tmp
- 
+
 {
 if [ -f /tmp/storeurl.txt ]; then
 rm -fr /tmp/storeurl.txt
 fi
 }
- 
+
 wget $URL/storeurl.txt
- 
+
 {
 if [ -f /tmp/storeurl.pl ]; then
 rm -fr /tmp/storeurl.pl
 fi
 }
- 
+
 mv storeurl.txt storeurl.pl
- 
+
 # Checking IF STOREURL.PL file have been downloaded. if YEs continue further , otherwise EXIT the script with ERROR ! [[ JZ .. . .]]
 {
 if [ ! -f /tmp/storeurl.pl ]; then
@@ -249,18 +249,18 @@ exit 0
 fi
 }
 cp -fr storeurl.pl $SQUID_DIR
- 
+
 echo
 echo
 echo -e "$COL_GREEN Setting EXECUTE permission for storeurl.pl . . . !! $COL_RESET"
 chmod +x $SQUID_DIR/storeurl.pl
- 
+
 # Creating CACHE folders
 echo
 echo
 echo -e "$COL_GREEN Creating CACHE directory in $CACHE_DIR , in this example,I used 5GB for cache for test ,Adjust it accordingly  . . . !! $COL_RESET"
 sleep 3
- 
+
 # Checking if /cache-1 folder exist  . . .
 {
 if [ ! -d "$CACHE_DIR" ]; then
@@ -282,7 +282,7 @@ squid -z
 chmod 777 -R $CACHE_DIR
 fi
 }
- 
+
 echo
 echo
 echo -e "$COL_GREEN Adding squid in /etc/rc.local for auto startup . . . !! $COL_RESET"
@@ -294,7 +294,7 @@ echo
 echo -e "$COL_GREEN Starting SQUID (and adding 10 seconds Pause for proper initialization). . . !! $COL_RESET"
 squid
 sleep 5
- 
+
 # Checking SQUID status via PID [zaib]
 #if [ "$pid" == "" ]; then
 #echo
